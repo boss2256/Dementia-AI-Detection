@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Dementia Detection AI Project</h1>
+        <p>Please select an option below:</p>
+        <a class="button" href="{{ url_for('register') }}">Register</a>
+        <a class="button" href="{{ url_for('login') }}">Login</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Cognitive Test</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    {% include 'admin/admin_navbar.html' %}
+
+    <div class="container mt-4">
+        <h1 class="mb-4">Clock Drawing Cognitive Test</h1>
+
+        <!-- Select user from the table -->
+        <div class="form-group">
+            <label for="userSelect">Select User:</label>
+            <select id="userSelect" class="form-control">
+                <!-- Populate the dropdown with non-admin users -->
+                {% for user in users if user.is_admin == 0 %}
+                    <option value="{{ user.id }}">{{ user.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Select date for the test -->
+        <div class="form-group">
+            <label for="testDate">Select Test Date:</label>
+            <input type="date" id="testDate" class="form-control">
+        </div>
+
+        <!-- Canvas for drawing -->
+        <canvas id="drawingCanvas" width="400" height="400" class="border"></canvas>
+
+        <!-- Input for test name -->
+        <div class="form-group">
+            <label for="testName">Test Name:</label>
+            <input type="text" id="testName" class="form-control">
+        </div>
+
+        <!-- Save button and Reset button -->
+        <div class="form-group">
+            <button id="saveButton" class="btn btn-primary">Save</button>
+            <button id="resetButton" class="btn btn-danger ml-2">Reset</button>
+        </div>
+
+        <!-- Bootstrap Modal for "Test saved successfully" message -->
+        <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="successModalLabel">Success!</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Test saved successfully!
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS and script.js -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

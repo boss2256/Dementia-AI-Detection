@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Additional CSS for the admin navbar */
+        .navbar {
+            width: 200px;
+            height: 100%; /* Set the height to 100% to fit the page height */
+            position: fixed;
+            left: 0;
+            top: 0;
+            background-color: #f0f0f0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .navbar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .navbar ul li {
+            margin-bottom: 20px; /* Increase margin to push the items further down */
+        }
+
+        .navbar ul li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            font-size: 20px; /* Increase font size for navbar links */
+        }
+
+        /* Style the navbar footer (username and Logout) */
+        .navbar-footer {
+            text-align: left;
+            font-size: 20px; /* Increase font size for footer text */
+            margin-top: 30px; /* Adjust negative margin to move the footer up */
+            margin-bottom: 50px;
+        }
+
+        .navbar-footer p {
+            margin-bottom: 10px;
+        }
+
+        .navbar-footer a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            font-size: 18px; /* Adjust font size for Logout button */
+        }
+
+        .navbar-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="{{ url_for('admin_dashboard') }}">Home</a></li>
+            <li><a href="{{ url_for('patients') }}">Patients</a></li>
+            <li><a href="{{ url_for('mri_analysis') }}">MRI Analysis</a></li>
+            <li><a href="{{ url_for('cognitive_test') }}">Cognitive Test</a></li>
+            <li><a href="{{ url_for('admin_reports') }}">Reports</a></li>
+            <li><a href="{{ url_for('settings') }}">Settings</a></li>
+        </ul>
+        <div class="navbar-footer">
+            <p>{{ current_user.username }}</p>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </nav>
+</body>
+</html>

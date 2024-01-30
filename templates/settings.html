@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Settings</title>
+    <!-- Include Bootstrap CSS (you may need to adjust the path) -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+{% if current_user.is_admin %}
+    {% include 'admin/admin_navbar.html' %}
+{% else %}
+    {% include 'user/navbar.html' %}
+{% endif %}
+<!-- Updated path -->
+<div class="container mt-4">
+    <h1>Settings</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="row justify-content-center">
+        <div class="col-md-12 text-center">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('settings') }}" class="mb-3">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name" class="form-control" placeholder="Name" value="{{ current_user.username }}" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" class="form-control" placeholder="Password">
+        </div>
+        <!-- Add more fields as needed -->
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+</div>
+
+<!-- Include Bootstrap JS (you may need to adjust the path) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ... head elements ... -->
+    <style>
+        /* Add custom CSS for the grid layout */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -15px; /* Adjust the margin to your preference */
+        }
+
+        .col-drawing {
+            flex: 0 0 calc(33.33% - 30px); /* Adjust the width of each drawing column */
+            max-width: calc(33.33% - 30px); /* Adjust the max-width of each drawing column */
+            padding: 15px; /* Adjust the padding to your preference */
+        }
+
+        .drawing-container {
+            border: 1px solid #ccc;
+            padding: 15px;
+            text-align: center;
+            overflow: hidden; /* Add this line to prevent overflow */
+        }
+
+        .card {
+            height: 100%;
+        }
+
+        canvas {
+            max-width: 100%; /* Allow the canvas to adapt to its container */
+            height: auto; /* Remove the fixed height to maintain aspect ratio */
+            width: 100%; /* Set canvas width to 100% of its container */
+        }
+    </style>
+</head>
+<body>
+    {% include 'user/navbar.html' %}
+
+    <div class="container">
+        <h1>User Reports</h1>
+        <div class="row">
+            {% for report in cognitive_tests %}
+                <div class="col-md-6 col-lg-4 col-drawing mb-4">
+                    <div class="drawing-container">
+                        <h5 class="card-title">Test: {{ report.test_name }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Date: {{ report.test_date.strftime('%Y-%m-%d') }}</h6>
+                        <canvas id="reportCanvas{{ loop.index }}" class="border"></canvas>
+                    </div>
+                </div>
+
+                <script>
+                    const canvas{{ loop.index }} = document.getElementById('reportCanvas{{ loop.index }}');
+                    const context{{ loop.index }} = canvas{{ loop.index }}.getContext('2d');
+                    const drawingData{{ loop.index }} = JSON.parse('{{ report.drawing_data | safe | tojson }}'); // Added the tojson filter
+
+                    console.log('Drawing Data:', drawingData{{ loop.index }});
+
+                    function drawSavedDrawing{{ loop.index }}() {
+                        context{{ loop.index }}.clearRect(0, 0, canvas{{ loop.index }}.width, canvas{{ loop.index }}.height);
+                        context{{ loop.index }}.strokeStyle = 'black'; // Set the stroke color to black
+
+                        for (const line of drawingData{{ loop.index }}) {
+                            context{{ loop.index }}.beginPath();
+                            context{{ loop.index }}.moveTo(line.startX, line.startY);
+                            context{{ loop.index }}.lineTo(line.endX, line.endY);
+                            context{{ loop.index }}.stroke(); // Add stroke to draw the line
+                            context{{ loop.index }}.closePath();
+                        }
+                    }
+
+                    // Ensure that the function is called when the image is loaded
+                    canvas{{ loop.index }}.addEventListener('load', drawSavedDrawing{{ loop.index }});
+                </script>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
