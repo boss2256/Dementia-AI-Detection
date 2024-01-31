@@ -4,4 +4,4 @@ Flask-SQLAlchemy
 Werkzeug
 passlib
 pandas
-tensorflow
+tensorflow==2.4.0
