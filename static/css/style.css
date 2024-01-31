@@ -18,9 +18,23 @@ body {
 }
 
 .flash-message {
-    color: red;
     margin-bottom: 10px;
+    color: green
 }
+
+.flash-message.flash-success {
+    color: green !important;
+}
+
+.flash-message.flash-error {
+    color: red !important;
+}
+
+.flash-message.flash-alert {
+    color: red !important; /* or any other color you prefer for alerts */
+}
+
+
 
 .register-form label,
 .register-form input,

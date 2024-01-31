@@ -52,7 +52,7 @@ def register():
 
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
-            flash('Username already exists.')
+            flash('Username already exists.', 'alert')  # Use 'alert' for errors or warnings
             return redirect(url_for('register'))
 
         new_user = User(username=username, is_admin=is_admin)
@@ -60,8 +60,11 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        flash('Registration successful.')
+        flash('Registration successful.', 'success')
+        flash('An error occurred.', 'error')  # Example for an error message
+
         return redirect(url_for('login'))
+
     return render_template('register.html')
 
 
@@ -189,7 +192,7 @@ def create_patient():
         db.session.add(new_patient)
         db.session.commit()
 
-        flash('Patient created successfully.')
+        flash('Patient created successfully.', 'success')
         return redirect(url_for('patients'))  # Redirect to the patients list page
     return render_template('admin/patients.html')  # Render the patients list page
 
@@ -227,7 +230,7 @@ def delete_patient(patient_id):
     else:
         db.session.delete(patient)
         db.session.commit()
-        flash('Patient deleted successfully.')
+        flash('Patient deleted successfully.', 'error')
 
     return redirect(url_for('patients'))  # Redirect back to the patients list page
 
@@ -275,4 +278,6 @@ with app.app_context():
         print("Error creating database tables:", e)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
+
