@@ -5,11 +5,22 @@
     <title>Patients</title>
     <!-- Include Bootstrap CSS (you may need to adjust the path) -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-{% include 'admin/admin_navbar.html' %}  <!-- Updated path -->
+{% include 'admin/admin_navbar.html' %}
+<div class="container mt-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert {{ 'alert-success' if category == 'success' else 'alert-danger' }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
     <div class="container mt-4">
-        <h1>Patients</h1>
+    <h1>Patients</h1>
         <!-- Add a form to create new patients with password -->
         <form method="POST" action="{{ url_for('create_patient') }}" class="mb-3">
             <div class="form-group">
@@ -28,6 +39,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Patient Name</th>
+                    <th>Role</th>  <!-- New column for User Role -->
                     <th>Actions</th>  <!-- Added column for Delete action -->
                 </tr>
             </thead>
@@ -36,6 +48,7 @@
                 <tr>
                     <td>{{ patient.id }}</td>
                     <td>{{ patient.username }}</td>
+                    <td>{{ 'admin' if patient.is_admin else 'user' }}</td>  <!-- Display 'admin' or 'user' based on is_admin value -->
                     <td>
                         <a href="{{ url_for('delete_patient', patient_id=patient.id) }}" class="btn btn-danger btn-sm">Delete</a>
                     </td>
@@ -44,9 +57,16 @@
             </tbody>
         </table>
     </div>
-    <!-- Include Bootstrap JS (you may need to adjust the path) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            setTimeout(function() {
+                $(".alert").fadeOut('slow');
+            }, 3000);
+        });
+    </script>
 </body>
 </html>
