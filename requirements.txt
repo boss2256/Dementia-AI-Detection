@@ -3,3 +3,5 @@ Flask-Login
 Flask-SQLAlchemy
 Werkzeug
 passlib
+pandas
+tensorflow

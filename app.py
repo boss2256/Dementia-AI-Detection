@@ -6,7 +6,8 @@ from datetime import datetime
 import json
 
 import os
-
+from keras.models import load_model
+import pandas as pd
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'
@@ -31,6 +32,37 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+
+
+
+# Load your trained model (replace 'best_model.h5' with your model's file path)
+model_path = os.path.join(os.path.dirname(__file__), 'models', 'tuned_model.h5')
+model = load_model(model_path)
+
+@app.route('/predict', methods=['POST'])
+@login_required  # Add appropriate authentication/authorization checks
+def predict():
+    if request.method == 'POST':
+        # Extract data from the request
+        data = request.get_json()
+
+        # Create a DataFrame from the received data
+        user_input_df = pd.DataFrame(data, index=[0])
+
+        # Make predictions on the user input data
+        predictions_prob = model.predict(user_input_df)
+        predictions = (predictions_prob > 0.5).astype(int).flatten()
+        predictions = predictions.tolist()  # Convert to regular Python list
+
+        # Return the prediction result as JSON
+        return jsonify({'prediction': predictions[0]})
+    return jsonify({'error': 'Invalid request method'})
+
+
+
+
+
 
 
 @login_manager.user_loader
