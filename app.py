@@ -281,9 +281,14 @@ def cognitive_test():
     users = User.query.all()
     return render_template('admin/cognitive_test.html', users=users)
 
-
 @app.route('/admin_reports')
+@login_required  # Ensure that the user is logged in
 def admin_reports():
+    # Check if the user has admin privileges
+    if not current_user.is_admin:
+        flash('Access denied. You do not have admin privileges.', 'danger')
+        return redirect(url_for('index'))  # Redirect to the homepage or another page
+
     # Your logic for admin reports goes here
     return render_template('admin/admin_reports.html')
 
