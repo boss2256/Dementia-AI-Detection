@@ -186,6 +186,15 @@
             <!-- Result will be displayed here -->
         </div>
     </div>
+
+    <!-- Probability display section -->
+    <div id="probability-section" class="row mt-3">
+        <div class="col-12">
+            <h4 class="text-left">Probability of Dementia:</h4>
+            <p id="probability-value"></p>
+        </div>
+    </div>
+
 </div>
 
 <!-- Bootstrap JS and jQuery -->
@@ -229,19 +238,25 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(user_input), // Send user_input directly,
+            body: JSON.stringify(user_input),
         })
         .then(response => response.json())
         .then(data => {
-        // Display the prediction result
-        const predictionResult = document.getElementById('prediction-result');
-        if (data.prediction === 1) {
-            predictionResult.innerHTML = `<span class="high-risk">Prediction: Dementia Risk</span>`;
-        } else {
-            predictionResult.innerHTML = `<span class="low-risk">Prediction: Low Risk of Dementia</span>`;
-        }
-    });
-}
+            // Display the prediction result
+            const predictionResult = document.getElementById('prediction-result');
+            if (data.prediction === 1) {
+                predictionResult.innerHTML = `<span class="high-risk">Prediction: Dementia Risk</span>`;
+            } else {
+                predictionResult.innerHTML = `<span class="low-risk">Prediction: Low Risk of Dementia</span>`;
+            }
+
+            // Display the probability
+            const probabilitySection = document.getElementById('probability-section');
+            const probabilityValue = document.getElementById('probability-value');
+            probabilityValue.innerText = `Probability: ${data.probability[0].toFixed(4)}`; // Assuming probability is an array containing a single value
+            probabilitySection.style.display = 'block'; // Show the probability section
+        });
+    }
 </script>
 
 </body>
