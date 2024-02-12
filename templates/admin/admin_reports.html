@@ -2,9 +2,247 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Admin Reports</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+    .low-risk {
+        color: green;
+    }
+    .high-risk {
+        color: red;
+    }
+</style>
 </head>
 <body>
 {% include 'admin/admin_navbar.html' %}  <!-- Updated path -->
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-left">Dementia Risk Prediction Report</h1>
+        </div>
+    </div>
+
+    <form id="prediction-form" class="row">
+        <div class="col-md-3">
+            <!-- First column inputs -->
+            <div class="form-group">
+                <label for="HeartRate">Heart Rate (60<):</label>
+                <input type="number" class="form-control" id="HeartRate" name="HeartRate" min="60">
+            </div>
+            <div class="form-group">
+                <label for="BloodOxygenLevel">Blood Oxygen Level (90-100):</label>
+                <input type="number" class="form-control" id="BloodOxygenLevel" name="BloodOxygenLevel" min="90" max="100">
+            </div>
+            <div class="form-group">
+                <label for="BodyTemperature">Body Temperature (35<):</label>
+                <input type="number" class="form-control" id="BodyTemperature" name="BodyTemperature" min="35">
+            </div>
+            <div class="form-group">
+                <label for="Weight">Weight:</label>
+                <input type="number" class="form-control" id="Weight" name="Weight">
+            </div>
+            <div class="form-group">
+                <label for="MRI_Delay">MRI Delay (0<):</label>
+                <input type="number" class="form-control" id="MRI_Delay" name="MRI_Delay" min="0">
+            </div>
+            <div class="form-group">
+                <label for="Age">Age:</label>
+                <input type="number" class="form-control" id="Age" name="Age">
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <!-- Second column inputs -->
+            <div class="form-group">
+                <label for="Cognitive_Test_Scores">Cognitive Test Scores (0-10):</label>
+                <input type="number" class="form-control" id="Cognitive_Test_Scores" name="Cognitive_Test_Scores" min="0" max="10">
+            </div>
+            <div class="form-group">
+                <label for="Diabetic_1">Diabetic:</label>
+                <select class="form-control" id="Diabetic_1" name="Diabetic_1">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Education_Level_No_School">Education Level (No School):</label>
+                <select class="form-control" id="Education_Level_No_School" name="Education_Level_No_School">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Education_Level_Primary_School">Education Level (Primary School):</label>
+                <select class="form-control" id="Education_Level_Primary_School" name="Education_Level_Primary_School">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Education_Level_Secondary_School">Education Level (Secondary School):</label>
+                <select class="form-control" id="Education_Level_Secondary_School" name="Education_Level_Secondary_School">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Family_History_Yes">Family History:</label>
+                <select class="form-control" id="Family_History_Yes" name="Family_History_Yes">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <!-- Third column inputs -->
+            <div class="form-group">
+                <label for="Smoking_Status_Former_Smoker">Smoking Status (Former Smoker):</label>
+                <select class="form-control" id="Smoking_Status_Former_Smoker" name="Smoking_Status_Former_Smoker">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Smoking_Status_Never_Smoked">Smoking Status (Never Smoked):</label>
+                <select class="form-control" id="Smoking_Status_Never_Smoked" name="Smoking_Status_Never_Smoked">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="APOE_ε4_Positive">APOE_ε4 Positive:</label>
+                <select class="form-control" id="APOE_ε4_Positive" name="APOE_ε4_Positive">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Physical_Activity_Moderate_Activity">Physical Activity (Moderate):</label>
+                <select class="form-control" id="Physical_Activity_Moderate_Activity" name="Physical_Activity_Moderate_Activity">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Physical_Activity_Sedentary">Physical Activity (Sedentary):</label>
+                <select class="form-control" id="Physical_Activity_Sedentary" name="Physical_Activity_Sedentary">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Depression_Status_Yes">Depression Status:</label>
+                <select class="form-control" id="Depression_Status_Yes" name="Depression_Status_Yes">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <!-- Fourth column inputs -->
+            <div class="form-group">
+                <label for="Nutrition_Diet_Mediterranean_Diet">Nutrition Diet (Mediterranean Diet):</label>
+                <select class="form-control" id="Nutrition_Diet_Mediterranean_Diet" name="Nutrition_Diet_Mediterranean_Diet">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Sleep_Quality_Poor">Sleep Quality (Poor):</label>
+                <select class="form-control" id="Sleep_Quality_Poor" name="Sleep_Quality_Poor">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Chronic_Health_Conditions_Heart_Disease">Chronic Health Conditions (Heart Disease):</label>
+                <select class="form-control" id="Chronic_Health_Conditions_Heart_Disease" name="Chronic_Health_Conditions_Heart_Disease">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Chronic_Health_Conditions_Hypertension">Chronic Health Conditions (Hypertension):</label>
+                <select class="form-control" id="Chronic_Health_Conditions_Hypertension" name="Chronic_Health_Conditions_Hypertension">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+
+            <!-- Prediction button -->
+            <div class="form-group">
+                <button type="button" class="btn btn-primary" onclick="makePrediction()">Predict</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Prediction result -->
+    <div id="prediction-result" class="row">
+        <div class="col-12">
+            <!-- Result will be displayed here -->
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    function makePrediction() {
+        // Get the user input data from the form
+        const user_input = {
+            'HeartRate': parseFloat(document.getElementById('HeartRate').value),
+            'BloodOxygenLevel': parseFloat(document.getElementById('BloodOxygenLevel').value),
+            'BodyTemperature': parseFloat(document.getElementById('BodyTemperature').value),
+            'Weight': parseFloat(document.getElementById('Weight').value),
+            'MRI_Delay': parseFloat(document.getElementById('MRI_Delay').value),
+            'Age': parseFloat(document.getElementById('Age').value),
+            'Cognitive_Test_Scores': parseFloat(document.getElementById('Cognitive_Test_Scores').value),
+            'Diabetic_1': parseInt(document.getElementById('Diabetic_1').value),
+            'Education_Level_No_School': parseInt(document.getElementById('Education_Level_No_School').value),
+            'Education_Level_Primary_School': parseInt(document.getElementById('Education_Level_Primary_School').value),
+            'Education_Level_Secondary_School': parseInt(document.getElementById('Education_Level_Secondary_School').value),
+            'Family_History_Yes': parseInt(document.getElementById('Family_History_Yes').value),
+            'Smoking_Status_Former_Smoker': parseInt(document.getElementById('Smoking_Status_Former_Smoker').value),
+            'Smoking_Status_Never_Smoked': parseInt(document.getElementById('Smoking_Status_Never_Smoked').value),
+            'APOE_ε4_Positive': parseInt(document.getElementById('APOE_ε4_Positive').value),
+            'Physical_Activity_Moderate_Activity': parseInt(document.getElementById('Physical_Activity_Moderate_Activity').value),
+            'Physical_Activity_Sedentary': parseInt(document.getElementById('Physical_Activity_Sedentary').value),
+            'Depression_Status_Yes': parseInt(document.getElementById('Depression_Status_Yes').value),
+            'Nutrition_Diet_Mediterranean_Diet': parseInt(document.getElementById('Nutrition_Diet_Mediterranean_Diet').value),
+            'Sleep_Quality_Poor': parseInt(document.getElementById('Sleep_Quality_Poor').value),
+            'Chronic_Health_Conditions_Heart_Disease': parseInt(document.getElementById('Chronic_Health_Conditions_Heart_Disease').value),
+            'Chronic_Health_Conditions_Hypertension': parseInt(document.getElementById('Chronic_Health_Conditions_Hypertension').value)
+        };
+
+
+
+        // Make an AJAX request to the prediction API
+        fetch('/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(user_input), // Send user_input directly,
+        })
+        .then(response => response.json())
+        .then(data => {
+        // Display the prediction result
+        const predictionResult = document.getElementById('prediction-result');
+        if (data.prediction === 1) {
+            predictionResult.innerHTML = `<span class="high-risk">Prediction: Dementia Risk</span>`;
+        } else {
+            predictionResult.innerHTML = `<span class="low-risk">Prediction: Low Risk of Dementia</span>`;
+        }
+    });
+}
+</script>
+
 </body>
 </html>
