@@ -40,6 +40,9 @@ class User(UserMixin, db.Model):
 model_path = os.path.join(os.path.dirname(__file__), 'models', 'tuned_model.h5')
 model = load_model(model_path)
 
+import numpy as np
+
+
 @app.route('/predict', methods=['POST'])
 @login_required  # Add appropriate authentication/authorization checks
 def predict():
@@ -52,17 +55,17 @@ def predict():
 
         # Make predictions on the user input data
         predictions_prob = model.predict(user_input_df)
-        predictions = (predictions_prob > 0.5).astype(int).flatten()
-        predictions = predictions.tolist()  # Convert to regular Python list
 
-        # Return the prediction result as JSON
-        return jsonify({'prediction': predictions[0]})
+        # Assuming the model is for binary classification
+        probability = predictions_prob[0]  # Probability of the positive class
+        prediction = 1 if probability > 0.5 else 0  # Convert probability to binary prediction
+
+        # Convert probability from ndarray to Python list
+        probability = probability.tolist()
+
+        # Return the prediction result and probability as JSON
+        return jsonify({'prediction': prediction, 'probability': probability})
     return jsonify({'error': 'Invalid request method'})
-
-
-
-
-
 
 
 @login_manager.user_loader
