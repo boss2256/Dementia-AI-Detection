@@ -68,6 +68,87 @@ def predict():
     return jsonify({'error': 'Invalid request method'})
 
 
+
+
+
+from flask import Flask, request, jsonify, redirect, url_for, flash
+from flask_login import login_required, current_user
+from keras.models import load_model
+from keras.preprocessing import image
+import numpy as np
+import os
+import tempfile
+import boto3
+from werkzeug.utils import secure_filename
+
+# Assuming you're using Boto3 to access S3
+s3 = boto3.client(
+    's3',
+    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
+)
+
+def load_model_from_s3(bucket_name, object_key):
+    with tempfile.NamedTemporaryFile() as tmp:
+        s3.download_file(Bucket=bucket_name, Key=object_key, Filename=tmp.name)
+        model = load_model(tmp.name)
+    return model
+
+# Usage
+bucket_name = 'mrianalysis'  # Your bucket name
+object_key = 'pre_tuned_mri.h5'  # Your object key
+model = load_model_from_s3(bucket_name, object_key)
+
+# Setup for the upload folder
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+image_size = (150, 150)  # Adjust based on your model's expected input
+class_labels = ["No Impairment", "Very Mild Impairment", "Mild Impairment", "Moderate Impairment"]
+
+@app.route('/predict_mri', methods=['GET', 'POST'])
+@login_required
+def predict_mri():
+    if request.method == 'POST':
+        if 'mriImage' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['mriImage']
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+
+            # Image preprocessing and prediction
+            img = image.load_img(file_path, target_size=image_size)
+            img_array = image.img_to_array(img)
+            img_array = np.expand_dims(img_array, axis=0) / 255.0
+            predictions = model.predict(img_array)
+            predicted_class = class_labels[np.argmax(predictions)]
+            probability = np.max(predictions) * 100  # Convert to percentage
+
+            # Cleanup the uploaded file if necessary
+            os.remove(file_path)
+
+            # Render the template with prediction results
+            return render_template('admin/mri_analysis.html', predicted_class=predicted_class, probability=f"{probability:.2f}%")
+    # GET request or initial page load
+    return render_template('admin/mri_analysis.html')
+
+
+
+
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
