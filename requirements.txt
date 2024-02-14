@@ -5,3 +5,4 @@ Werkzeug
 passlib
 pandas
 tensorflow-cpu==2.15.0
+Pillow

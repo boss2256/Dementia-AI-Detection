@@ -38,7 +38,7 @@ class User(UserMixin, db.Model):
 
 # Load your trained model (replace 'best_model.h5' with your model's file path)
 model_path = os.path.join(os.path.dirname(__file__), 'models', 'tuned_model.h5')
-model = load_model(model_path)
+model_pred = load_model(model_path)
 
 import numpy as np
 
@@ -54,7 +54,7 @@ def predict():
         user_input_df = pd.DataFrame(data, index=[0])
 
         # Make predictions on the user input data
-        predictions_prob = model.predict(user_input_df)
+        predictions_prob = model_pred.predict(user_input_df)
 
         # Assuming the model is for binary classification
         probability = predictions_prob[0]  # Probability of the positive class

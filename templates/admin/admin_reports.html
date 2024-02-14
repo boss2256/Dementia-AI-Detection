@@ -175,20 +175,27 @@
 
             <!-- Prediction button -->
             <div class="form-group">
-                <button type="button" class="btn btn-primary" onclick="makePrediction()">Predict</button>
+                <button type="button" class="btn btn-primary w-100" id="predictButton" onclick="makePrediction()">Predict</button>
             </div>
         </div>
     </form>
 
+    <!-- Loader -->
+    <div id="loader" style="display:none; text-align:center;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
     <!-- Prediction result -->
-    <div id="prediction-result" class="row">
+    <div id="prediction-result" class="row" style="display:none;">
         <div class="col-12">
             <!-- Result will be displayed here -->
         </div>
     </div>
 
     <!-- Probability display section -->
-    <div id="probability-section" class="row mt-3">
+    <div id="probability-section" class="row mt-3" style="display:none;">
         <div class="col-12">
             <h4 class="text-left">Probability of Dementia:</h4>
             <p id="probability-value"></p>
@@ -203,61 +210,122 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
+    // Function to show the loader and disable the prediction button
+    function showLoader() {
+        document.getElementById('loader').style.display = 'block';
+        document.getElementById('predictButton').disabled = true;
+    }
+
+    // Function to hide the loader and enable the prediction button
+    function hideLoader() {
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('predictButton').disabled = false;
+    }
+
     function makePrediction() {
-        // Get the user input data from the form
-        const user_input = {
-            'HeartRate': parseFloat(document.getElementById('HeartRate').value),
-            'BloodOxygenLevel': parseFloat(document.getElementById('BloodOxygenLevel').value),
-            'BodyTemperature': parseFloat(document.getElementById('BodyTemperature').value),
-            'Weight': parseFloat(document.getElementById('Weight').value),
-            'MRI_Delay': parseFloat(document.getElementById('MRI_Delay').value),
-            'Age': parseFloat(document.getElementById('Age').value),
-            'Cognitive_Test_Scores': parseFloat(document.getElementById('Cognitive_Test_Scores').value),
-            'Diabetic_1': parseInt(document.getElementById('Diabetic_1').value),
-            'Education_Level_No_School': parseInt(document.getElementById('Education_Level_No_School').value),
-            'Education_Level_Primary_School': parseInt(document.getElementById('Education_Level_Primary_School').value),
-            'Education_Level_Secondary_School': parseInt(document.getElementById('Education_Level_Secondary_School').value),
-            'Family_History_Yes': parseInt(document.getElementById('Family_History_Yes').value),
-            'Smoking_Status_Former_Smoker': parseInt(document.getElementById('Smoking_Status_Former_Smoker').value),
-            'Smoking_Status_Never_Smoked': parseInt(document.getElementById('Smoking_Status_Never_Smoked').value),
-            'APOE_ε4_Positive': parseInt(document.getElementById('APOE_ε4_Positive').value),
-            'Physical_Activity_Moderate_Activity': parseInt(document.getElementById('Physical_Activity_Moderate_Activity').value),
-            'Physical_Activity_Sedentary': parseInt(document.getElementById('Physical_Activity_Sedentary').value),
-            'Depression_Status_Yes': parseInt(document.getElementById('Depression_Status_Yes').value),
-            'Nutrition_Diet_Mediterranean_Diet': parseInt(document.getElementById('Nutrition_Diet_Mediterranean_Diet').value),
-            'Sleep_Quality_Poor': parseInt(document.getElementById('Sleep_Quality_Poor').value),
-            'Chronic_Health_Conditions_Heart_Disease': parseInt(document.getElementById('Chronic_Health_Conditions_Heart_Disease').value),
-            'Chronic_Health_Conditions_Hypertension': parseInt(document.getElementById('Chronic_Health_Conditions_Hypertension').value)
-        };
+        showLoader(); // Show the loader when prediction starts
 
+        // Simulate a network request with a delay for the loader effect
+        setTimeout(() => {
+            // Collect user input from the form
+            const user_input = {
+                'HeartRate': parseFloat(document.getElementById('HeartRate').value),
+                'BloodOxygenLevel': parseFloat(document.getElementById('BloodOxygenLevel').value),
+                'BodyTemperature': parseFloat(document.getElementById('BodyTemperature').value),
+                'Weight': parseFloat(document.getElementById('Weight').value),
+                'MRI_Delay': parseFloat(document.getElementById('MRI_Delay').value),
+                'Age': parseFloat(document.getElementById('Age').value),
+                'Cognitive_Test_Scores': parseFloat(document.getElementById('Cognitive_Test_Scores').value),
+                'Diabetic_1': parseInt(document.getElementById('Diabetic_1').value),
+                'Education_Level_No_School': parseInt(document.getElementById('Education_Level_No_School').value),
+                'Education_Level_Primary_School': parseInt(document.getElementById('Education_Level_Primary_School').value),
+                'Education_Level_Secondary_School': parseInt(document.getElementById('Education_Level_Secondary_School').value),
+                'Family_History_Yes': parseInt(document.getElementById('Family_History_Yes').value),
+                'Smoking_Status_Former_Smoker': parseInt(document.getElementById('Smoking_Status_Former_Smoker').value),
+                'Smoking_Status_Never_Smoked': parseInt(document.getElementById('Smoking_Status_Never_Smoked').value),
+                'APOE_ε4_Positive': parseInt(document.getElementById('APOE_ε4_Positive').value),
+                'Physical_Activity_Moderate_Activity': parseInt(document.getElementById('Physical_Activity_Moderate_Activity').value),
+                'Physical_Activity_Sedentary': parseInt(document.getElementById('Physical_Activity_Sedentary').value),
+                'Depression_Status_Yes': parseInt(document.getElementById('Depression_Status_Yes').value),
+                'Nutrition_Diet_Mediterranean_Diet': parseInt(document.getElementById('Nutrition_Diet_Mediterranean_Diet').value),
+                'Sleep_Quality_Poor': parseInt(document.getElementById('Sleep_Quality_Poor').value),
+                'Chronic_Health_Conditions_Heart_Disease': parseInt(document.getElementById('Chronic_Health_Conditions_Heart_Disease').value),
+                'Chronic_Health_Conditions_Hypertension': parseInt(document.getElementById('Chronic_Health_Conditions_Hypertension').value)
+            };
 
+            // Replace '/predict' with your actual prediction API endpoint
+            fetch('/predict', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(user_input),
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoader(); // Hide the loader when prediction is received
 
-        // Make an AJAX request to the prediction API
-        fetch('/predict', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(user_input),
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Display the prediction result
-            const predictionResult = document.getElementById('prediction-result');
-            if (data.prediction === 1) {
-                predictionResult.innerHTML = `<span class="high-risk">Prediction: Dementia Risk</span>`;
-            } else {
-                predictionResult.innerHTML = `<span class="low-risk">Prediction: Low Risk of Dementia</span>`;
+                // Display the prediction result
+                const predictionResult = document.getElementById('prediction-result');
+                predictionResult.style.display = 'block'; // Ensure the result container is visible
+                predictionResult.innerHTML = data.prediction === 1 ?
+                    `<span class="high-risk">Prediction: Dementia Risk</span>` :
+                    `<span class="low-risk">Prediction: Low Risk of Dementia</span>`;
+
+                // Display the probability
+                const probabilityValue = document.getElementById('probability-value');
+                probabilityValue.innerText = `Probability: ${(data.probability * 100).toFixed(2)}%`; // Convert to percentage if necessary
+                document.getElementById('probability-section').style.display = 'block'; // Make sure to display the probability section
+            })
+            .catch(error => {
+                console.error('Prediction error:', error);
+                hideLoader(); // Ensure loader is hidden in case of error
+            });
+        }, 2000); // Delay for 2 seconds to simulate network request time
+    }
+
+    // Update group function to handle dropdown selection logic
+    function updateGroup(selectionId, groupId) {
+        groupId.forEach(function(id) {
+            if (id !== selectionId) {
+                document.getElementById(id).value = '0'; // Set others to 'No'
             }
-
-            // Display the probability
-            const probabilitySection = document.getElementById('probability-section');
-            const probabilityValue = document.getElementById('probability-value');
-            probabilityValue.innerText = `Probability: ${data.probability[0].toFixed(4)}`; // Assuming probability is an array containing a single value
-            probabilitySection.style.display = 'block'; // Show the probability section
         });
     }
+
+    // Attach onchange listeners to dropdowns for Education Level, Smoking Status, etc.
+    // Similar to previous examples, implement the logic for each group
+    // Note: Ensure IDs used here match those in your form
+
+    // Example for Education Level dropdowns
+        ['Education_Level_No_School', 'Education_Level_Primary_School', 'Education_Level_Secondary_School'].forEach(function(id) {
+            document.getElementById(id).onchange = function() {
+                updateGroup(id, ['Education_Level_No_School', 'Education_Level_Primary_School', 'Education_Level_Secondary_School']);
+            };
+        });
+
+        // Smoking Status
+        ['Smoking_Status_Former_Smoker', 'Smoking_Status_Never_Smoked'].forEach(function(id) {
+            document.getElementById(id).onchange = function() {
+                updateGroup(id, ['Smoking_Status_Former_Smoker', 'Smoking_Status_Never_Smoked']);
+            };
+        });
+
+        // Physical Activity
+        ['Physical_Activity_Moderate_Activity', 'Physical_Activity_Sedentary'].forEach(function(id) {
+            document.getElementById(id).onchange = function() {
+                updateGroup(id, ['Physical_Activity_Moderate_Activity', 'Physical_Activity_Sedentary']);
+            };
+        });
+
+        // Chronic Health Conditions
+        ['Chronic_Health_Conditions_Heart_Disease', 'Chronic_Health_Conditions_Hypertension'].forEach(function(id) {
+            document.getElementById(id).onchange = function() {
+                updateGroup(id, ['Chronic_Health_Conditions_Heart_Disease', 'Chronic_Health_Conditions_Hypertension']);
+            };
+        });
+
+    // Implement similar onchange listeners for Smoking Status, Physical Activity, and Chronic Health Conditions
 </script>
+
 
 </body>
 </html>
