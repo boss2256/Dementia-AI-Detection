@@ -77,7 +77,7 @@ Contributions are welcome! Please submit a pull request or open an issue to disc
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-
+```
 import asyncio
 from openleadr import OpenADRServer
 from datetime import datetime, timedelta
@@ -112,4 +112,4 @@ if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     loop.create_task(server.run())
     loop.run_forever()
-
+```
