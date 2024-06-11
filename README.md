@@ -76,3 +76,40 @@ Contributions are welcome! Please submit a pull request or open an issue to disc
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+
+import asyncio
+from openleadr import OpenADRServer
+from datetime import datetime, timedelta
+
+async def on_create_party_registration(registration_info):
+    return 'ven123', 'registrationID123', None, 60
+
+async def on_request_event(ven_id):
+    return [{
+        'event_id': 'event123',
+        'modification_number': 0,
+        'priority': 0,
+        'event_status': 'far',
+        'market_context': 'http://marketcontext01',
+        'created_date_time': datetime.now().isoformat(),
+        'event_signals': [{
+            'intervals': [{'dtstart': datetime.now().isoformat(), 'duration': timedelta(minutes=10), 'signal_payload': 1}],
+            'signal_id': 'signal123',
+            'signal_name': 'simple',
+            'signal_type': 'level',
+            'current_value': 0
+        }],
+        'targets': [{'ven_id': 'ven123'}],
+        'response_required': 'always'
+    }]
+
+server = OpenADRServer(vtn_id='myvtn', http_host='0.0.0.0', http_port=8080)
+server.add_handler('on_create_party_registration', on_create_party_registration)
+server.add_handler('on_request_event', on_request_event)
+
+if __name__ == '__main__':
+    loop = asyncio.get_event_loop()
+    loop.create_task(server.run())
+    loop.run_forever()
+
