@@ -78,13 +78,83 @@ Contributions are welcome! Please submit a pull request or open an issue to disc
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ```
-{
-    "ven_name": "PNNLVEN",
-    "vtn_url": "http://127.0.0.1:8080/OpenADR2/Simple/2.0b",
-    "cert_path": "",
-    "key_path": "",
-    "debug": true,
-    "disable_signature": true
-}
+import os
+import asyncio
+from datetime import datetime, timezone, timedelta
+from openleadr import OpenADRServer, enable_default_logging
+from functools import partial
+import logging
+
+enable_default_logging()
+
+# Configure logging
+logging.basicConfig(filename='vtn_server.log',
+                    level=logging.DEBUG,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+logger = logging.getLogger(__name__)
+
+PORT = os.getenv("VTN_PORT", 8080)
+
+async def on_create_party_registration(registration_info):
+    logger.info("Party registration request received.")
+    if registration_info['ven_name'] == 'ven123':
+        ven_id = 'ven_id_123'
+        registration_id = 'reg_id_123'
+        logger.info(f"Registered ven_id: {ven_id}, registration_id: {registration_id}")
+        return ven_id, registration_id
+    else:
+        logger.error("Invalid registration info.")
+        return False
+
+async def on_register_report(ven_id, resource_id, measurement, unit, scale,
+                             min_sampling_interval, max_sampling_interval):
+    logger.info(f"Report registration from ven_id: {ven_id}, resource_id: {resource_id}")
+    callback = partial(on_update_report,
+                       ven_id=ven_id,
+                       resource_id=resource_id,
+                       measurement=measurement)
+    sampling_interval = min_sampling_interval
+    return callback, sampling_interval
+
+async def on_update_report(data, ven_id, resource_id, measurement):
+    logger.info(f"Report update received from ven_id: {ven_id}, resource_id: {resource_id}")
+    for time, value in data:
+        logger.info(f"Time: {time}, Value: {value}")
+
+async def event_response_callback(ven_id, event_id, opt_type):
+    logger.info(f"Event response received from ven_id: {ven_id}, event_id: {event_id}, opt_type: {opt_type}")
+
+def ven_lookup(ven_id):
+    logger.info(f"VEN lookup for ven_id: {ven_id}")
+    return {
+        'ven_id': 'ven_id_123',
+        'ven_name': 'ven123',
+    }
+
+# Create the server object
+server = OpenADRServer(vtn_id='myvtn', http_port=PORT)
+
+# Add the handler for client (VEN) registrations
+server.add_handler('on_create_party_registration', on_create_party_registration)
+
+# Add the handler for report registrations from the VEN
+server.add_handler('on_register_report', on_register_report)
+
+# Add a prepared event for a VEN that will be picked up when it polls for new messages.
+server.add_event(ven_id='ven_id_123',
+                 signal_name='simple',
+                 signal_type='level',
+                 intervals=[{
+                     'dtstart': datetime.now(timezone.utc) + timedelta(minutes=5),
+                     'duration': timedelta(minutes=60),
+                     'signal_payload': 100.0
+                 }],
+                 callback=event_response_callback)
+
+# Run the server on the asyncio event loop
+loop = asyncio.get_event_loop()
+loop.create_task(server.run())
+loop.run_forever()
 
 ```
